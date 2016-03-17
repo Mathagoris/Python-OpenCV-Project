@@ -16,8 +16,17 @@ def get_route_mask(event,x,y,flags,param):
 		routeChosen = not routeChosen
 		if routeChosen:
 			color = hsv[y,x]
-			lower = np.array([color[0] - 20, color[1] - 75, color[2] - 75], np.uint8)
-			upper = np.array([color[0] + 20, color[1] + 75, color[2] + 75], np.uint8)
+			lower = np.array([0 if color[0] - 10 < 0 else color[0] - 10, 
+							0 if color[1] - 75 < 0 else color[1] - 75,
+							0 if color[2] - 75 < 0 else color[2] - 75], np.uint8)
+			upper = np.array([180 if color[0] + 10 > 180 else color[0] + 10, 
+							255 if color[1] + 75 > 255 else color[1] + 75,
+							255 if color[2] + 75 > 255 else color[2] + 75], np.uint8)
+			print('point')
+			print(color)
+			print('upper and lower')
+			print(upper)
+			print(lower)
 			mask = cv2.inRange(hsv, lower, upper)
 			mask_inv = cv2.bitwise_not(mask)
 
