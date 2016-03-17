@@ -15,7 +15,7 @@ def get_route_mask(event,x,y,flags,param):
 		global routeChosen, mask, mask_inv, hsv
 		routeChosen = not routeChosen
 		if routeChosen:
-	  		color = hsv[y,x]
+			color = hsv[y,x]
  			lower = np.array([color[0] - 20, color[1] - 75, color[2] - 75], np.uint8)
  			upper = np.array([color[0] + 20, color[1] + 75, color[2] + 75], np.uint8)
  			lower = np.array([0 if color[0] - 10 < 0 else color[0] - 10, 
