@@ -8,6 +8,7 @@ routeChosen = False
 mask = None
 mask_inv = None
 b,g,r = 0,0,0
+hsv = None
 
 # mouse callback function
 def get_route_mask(event,x,y,flags,param):
@@ -16,19 +17,12 @@ def get_route_mask(event,x,y,flags,param):
 		routeChosen = not routeChosen
 		if routeChosen:
 			color = hsv[y,x]
- 			lower = np.array([color[0] - 20, color[1] - 75, color[2] - 75], np.uint8)
- 			upper = np.array([color[0] + 20, color[1] + 75, color[2] + 75], np.uint8)
- 			lower = np.array([0 if color[0] - 10 < 0 else color[0] - 10, 
-							0 if color[1] - 75 < 0 else color[1] - 75,
- 							0 if color[2] - 75 < 0 else color[2] - 75], np.uint8)
- 			upper = np.array([180 if color[0] + 10 > 180 else color[0] + 10, 
- 							255 if color[1] + 75 > 255 else color[1] + 75,
- 							255 if color[2] + 75 > 255 else color[2] + 75], np.uint8)
- 			print('point')
- 			print(color)
- 			print('upper and lower')
- 			print(upper)
-			print(lower)
+			lower = np.array([0 if color[0] - 10 < 0 else color[0] - 10,
+ 				0 if color[1] - 75 < 0 else color[1] - 75,
+				0 if color[2] - 75 < 0 else color[2] - 75], np.uint8)
+			upper = np.array([180 if color[0] + 10 > 180 else color[0] + 10, 
+ 				255 if color[1] + 75 > 255 else color[1] + 75,
+ 				255 if color[2] + 75 > 255 else color[2] + 75], np.uint8)
 			mask = cv2.inRange(hsv, lower, upper)
 			mask_inv = cv2.bitwise_not(mask)
 
@@ -39,13 +33,16 @@ def change_color(phase):
 	r = math.sin((2*math.pi) * (phase/60) + ((4*math.pi)/3)) * 127 + 128
 
 def find_routes(image):
+	global hsv
 	# Create a black image, a window and bind the function to window
 	img = cv2.imread(image, 1)
-	# img = cv2.imread('walls/wall.jpg', 1)
 	rows,cols,channels = img.shape
 	colorImg = np.zeros((rows,cols,3), np.uint8)
 	hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 	cv2.namedWindow(image, cv2.WINDOW_NORMAL)
+	cv2.namedWindow('Wall', cv2.WINDOW_NORMAL)
+	cv2.namedWindow('ColorMask', cv2.WINDOW_NORMAL)
+	cv2.namedWindow('Mask', cv2.WINDOW_NORMAL)
 	cv2.resizeWindow(image, 500, 500)
 	cv2.setMouseCallback(image, get_route_mask)
 	phase = 1
@@ -56,6 +53,9 @@ def find_routes(image):
 			colorRoute = cv2.bitwise_and(colorImg, colorImg, mask = mask)
 			newImg = cv2.add(imgRoute,colorRoute)
 			cv2.imshow(image, newImg)
+			cv2.imshow('Wall', imgRoute)
+			cv2.imshow('ColorMask', colorRoute)
+			cv2.imshow('Mask', mask)
 			change_color(phase)
 			colorImg[:,:] = (b,g,r)
 			if phase == 60:

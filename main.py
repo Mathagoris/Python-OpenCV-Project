@@ -1,6 +1,5 @@
 import sys
 from os import listdir
-import thread
 import ClimbingWallRouteDetection as routeFinder
 from PyQt4 import QtGui, QtCore, Qt
 from PyQt4.QtGui import *
@@ -18,6 +17,7 @@ class MainWindow(QtGui.QWidget):
 
 		# Add all images as buttons
 		files = listdir('walls')
+		files.sort()
 		for file in files:
 			if file.endswith('.jpg'):
 				self.addImageButton(layout, file)
